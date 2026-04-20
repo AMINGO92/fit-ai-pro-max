@@ -417,7 +417,7 @@ with tab4:
 
     st.info("Upload food photo → get calories, protein, carbs, fat")
 
-    api_key = "AIzaSyBA2uNTCBqWPdkngRs9EuLqhmsBR2OJeO8"
+    api_key = "AIzaSyDwctXJJU83_R44QkblvypDOVjWSY3DFu4"
 
     files = st.file_uploader(
         "Upload",
