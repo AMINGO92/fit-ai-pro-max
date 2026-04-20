@@ -271,7 +271,7 @@ if st.button("💾 Save"):
 
 st.subheader("🧪 Medical AI")
 
-api_key = "AIzaSyCXc-9t-8ilXP95KPar5rplm_A25pTjCmI"
+api_key = "AIzaSyDwctXJJU83_R44QkblvypDOVjWSY3DFu4"
 
 medical_files = st.file_uploader(
     "Upload Medical Report",
