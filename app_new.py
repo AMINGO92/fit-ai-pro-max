@@ -73,7 +73,7 @@ if mode == "Signup":
             st.sidebar.error("Username Exists")
 
 username = st.sidebar.text_input("Username",key="login_user")
-password = st.sidebar.text_input("Password", type="password")
+password = st.sidebar.text_input("Password", type="password", key="login_pass")
 
 user = c.execute(
     "SELECT * FROM users WHERE username=? AND password=?",
