@@ -271,7 +271,7 @@ if st.button("💾 Save"):
 
 st.subheader("🧪 Medical AI")
 
-api_key = "AIzaSyBjmWDbovBjiLlTWFbtrm5o4t_vQAzgdmM"
+api_key = "AIzaSyDEcC4FtECxR-yi58z9ewitnGCI7drNzKo"
 
 medical_files = st.file_uploader(
     "Upload Medical Report",
@@ -417,7 +417,7 @@ with tab4:
 
     st.info("Upload food photo → get calories, protein, carbs, fat")
 
-    api_key = "AIzaSyBjmWDbovBjiLlTWFbtrm5o4t_vQAzgdmM"
+    api_key = "AIzaSyDEcC4FtECxR-yi58z9ewitnGCI7drNzKo"
 
     files = st.file_uploader(
         "Upload",
