@@ -47,7 +47,7 @@ if "chat_history" not in st.session_state:
 conn = sqlite3.connect("health.db", check_same_thread=False)
 c = conn.cursor()
 
-food_df = pd.read_csv(r"C:\Users\Admin\Desktop\health_ai_project\indian_food.csv")
+food_df = pd.read_csv("indian_food.csv")
 
 c.execute("CREATE TABLE IF NOT EXISTS users(username TEXT PRIMARY KEY,password TEXT)")
 c.execute("CREATE TABLE IF NOT EXISTS tracking(username TEXT,date TEXT,weight REAL,steps REAL,calories REAL,sleep REAL)")
