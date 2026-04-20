@@ -72,7 +72,7 @@ if mode == "Signup":
         except:
             st.sidebar.error("Username Exists")
 
-username = st.sidebar.text_input("Username")
+username = st.sidebar.text_input("Username",key="login_user")
 password = st.sidebar.text_input("Password", type="password")
 
 user = c.execute(
