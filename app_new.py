@@ -259,10 +259,10 @@ st.subheader("📝 Daily Log")
 
 today = str(datetime.date.today())
 
-steps = st.number_input("Steps", 0)
-cal = st.number_input("Calories Today", 0)
-sleep_today = st.number_input("Sleep Today (hrs)", 0.0)
-notes = st.text_input("Notes")
+steps = st.number_input("Steps", 0, key="steps1")
+cal = st.number_input("Calories Today", 0, key="cal1")
+sleep_today = st.number_input("Sleep Today (hrs)", 0.0, key="sleep1")
+notes = st.text_input("Notes", key="notes1")
 
 if st.button("Save Today"):
     c.execute(
