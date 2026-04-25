@@ -195,14 +195,14 @@ elif st.session_state.step == 6:
 # ================================
 # 🧬 DIGITAL TWIN
 # ================================
-daily_deficit = burn - calories
+# daily_deficit = burn - calories
 
-pred7 = max(weight - (daily_deficit*7/7700), 30)
-pred30 = max(weight - (daily_deficit*30/7700), 30)
+# pred7 = max(weight - (daily_deficit*7/7700), 30)
+# pred30 = max(weight - (daily_deficit*30/7700), 30)
 
-st.subheader("🧬 Prediction")
-st.write(f"📉 7 Days: {round(pred7,2)} kg")
-st.write(f"📉 30 Days: {round(pred30,2)} kg")
+# st.subheader("🧬 Prediction")
+# st.write(f"📉 7 Days: {round(pred7,2)} kg")
+# st.write(f"📉 30 Days: {round(pred30,2)} kg")
 
 
 # ================================
