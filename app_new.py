@@ -255,6 +255,40 @@ elif st.session_state.step == 6:
         
     st.write("Welcome to your dashboard")
 
+st.subheader("📝 Daily Log")
+
+today = str(datetime.date.today())
+
+steps = st.number_input("Steps", 0)
+cal = st.number_input("Calories Today", 0)
+sleep_today = st.number_input("Sleep Today (hrs)", 0.0)
+notes = st.text_input("Notes")
+
+if st.button("Save Today"):
+    c.execute(
+        "INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
+        (username, today, steps, cal, sleep_today, notes)
+    )
+    conn.commit()
+    st.success("✅ Today Saved")
+
+st.subheader("📅 Last 30 Days")
+
+log_df = pd.read_sql(
+    "SELECT * FROM daily_log WHERE username=? ORDER BY date DESC LIMIT 30",
+    conn,
+    params=(username,)
+)
+
+if not log_df.empty:
+    st.write(log_df)
+
+    st.line_chart(
+        log_df.set_index("date")[["steps", "calories", "sleep"]]
+    )
+else:
+    st.warning("No daily logs yet")
+
 # ================================
 # DAILY LOG FORM
 # ================================
