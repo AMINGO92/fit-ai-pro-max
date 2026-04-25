@@ -231,6 +231,7 @@ if uploaded_file is not None:
 
 
 elif st.session_state.step == 6:
+
     st.header("📊 Dashboard")
 
     username = st.session_state.get("username", None)
@@ -239,58 +240,66 @@ elif st.session_state.step == 6:
         st.error("Login required")
         st.stop()
 
+    # ================================
+    # LOAD MAIN DATA
+    # ================================
     try:
         data = pd.read_sql(
-        "SELECT * FROM tracking WHERE username=?",
-        conn,
-        params=(username,)
-    )
+            "SELECT * FROM tracking WHERE username=?",
+            conn,
+            params=(username,)
+        )
     except:
         data = pd.DataFrame()
 
     if not data.empty:
         st.success("✅ Data Loaded")
-
         st.write(data)
         st.line_chart(data["weight"])
     else:
         st.warning("No data yet")
-        
+
     st.write("Welcome to your dashboard")
 
-st.subheader("📝 Daily Log")
+    # ================================
+    # 📝 DAILY LOG (INSIDE STEP 6)
+    # ================================
+    st.subheader("📝 Daily Log")
 
-today = str(datetime.date.today())
+    today = str(datetime.date.today())
 
-steps = st.number_input("Steps", 0, key="steps1")
-cal = st.number_input("Calories Today", 0, key="cal1")
-sleep_today = st.number_input("Sleep Today (hrs)", 0.0, key="sleep1")
-notes = st.text_input("Notes", key="notes1")
+    steps = st.number_input("Steps", 0, key="steps1")
+    cal = st.number_input("Calories Today", 0, key="cal1")
+    sleep_today = st.number_input("Sleep Today (hrs)", 0.0, key="sleep1")
+    notes = st.text_input("Notes", key="notes1")
 
-if st.button("Save Today", key="save1"):
-    c.execute(
-        "INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
-        (username, today, steps, cal, sleep_today, notes)
+    if st.button("Save Today", key="save1"):
+        c.execute(
+            "INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
+            (username, today, steps, cal, sleep_today, notes)
+        )
+        conn.commit()
+        st.success("✅ Today Saved")
+
+    # ================================
+    # 📅 LAST 30 DAYS
+    # ================================
+    st.subheader("📅 Last 30 Days")
+
+    log_df = pd.read_sql(
+        "SELECT * FROM daily_log WHERE username=? ORDER BY date DESC LIMIT 30",
+        conn,
+        params=(username,)
     )
-    conn.commit()
-    st.success("✅ Today Saved")
 
-st.subheader("📅 Last 30 Days")
+    if not log_df.empty:
+        st.write(log_df)
 
-log_df = pd.read_sql(
-    "SELECT * FROM daily_log WHERE username=? ORDER BY date DESC LIMIT 30",
-    conn,
-    params=(username,)
-)
-
-if not log_df.empty:
-    st.write(log_df)
-
-    st.line_chart(
-        log_df.set_index("date")[["steps", "calories", "sleep"]]
-    )
-else:
-    st.warning("No daily logs yet")
+        st.line_chart(
+            log_df.set_index("date")[["steps", "calories", "sleep"]]
+        )
+    else:
+        st.warning("No daily logs yet")
 
 # ================================
 # REPORT DOWNLOAD
