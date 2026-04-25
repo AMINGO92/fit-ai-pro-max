@@ -264,7 +264,7 @@ cal = st.number_input("Calories Today", 0, key="cal1")
 sleep_today = st.number_input("Sleep Today (hrs)", 0.0, key="sleep1")
 notes = st.text_input("Notes", key="notes1")
 
-if st.button("Save Today"):
+if st.button("Save Today", key="save1"):
     c.execute(
         "INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
         (username, today, steps, cal, sleep_today, notes)
