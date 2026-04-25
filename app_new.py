@@ -455,29 +455,6 @@ if 'log_df' in locals() and not log_df.empty:
     else:
         st.write("✅ Diet is balanced")
 
-
-
-
-# ================================
-# DAILY LOG FORM
-# ================================
-st.subheader("📝 Daily Log")
-
-today = str(datetime.date.today())
-
-steps = st.number_input("Steps", 0)
-cal = st.number_input("Calories Today", 0)
-sleep_today = st.number_input("Sleep Today (hrs)", 0.0)
-notes = st.text_input("Notes")
-
-if st.button("Save Today"):
-    c.execute(
-        "INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
-        (username, today, steps, cal, sleep_today, notes)
-    )
-    conn.commit()
-    st.success("✅ Today Saved")
-
 # ================================
 # EXTRA DASHBOARD FEATURES
 # ================================
