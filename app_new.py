@@ -471,7 +471,7 @@ if st.button("Save Today"):
 # EXTRA DASHBOARD FEATURES
 # ================================
 
-# Latest record काढ
+    # Latest record काढ
 if not data.empty:
     latest = data.iloc[-1]
 
@@ -480,26 +480,27 @@ if not data.empty:
     st.write(f"Weight: {latest['weight']} kg")
     st.write(f"Sleep: {latest['sleep']} hrs")
     st.write(f"Goal: {latest['goal']}")
+else:
+    st.warning("No data available")
 
-# 🍔 Food Calories (Step 5 मधून)
+# 🍔 Food Calories
 calories = st.session_state.get("calories", 0)
 
 st.subheader("🍔 Today Food")
 st.write(f"Calories: {calories}")
 
 # 🔥 Health Suggestion
-if calories > 0:
+if not data.empty and calories > 0:
     if calories > latest["weight"] * 20:
         st.error("⚠️ Calories जास्त आहेत")
     else:
         st.success("✅ Calories control मध्ये आहेत")
 
-# 📊 Combined Graph
-st.subheader("📊 Progress Overview")
-
-chart_data = data[["weight", "sleep"]]
-
-st.line_chart(chart_data)
+# 📊 Graph
+if not data.empty:
+    st.subheader("📊 Progress Overview")
+    chart_data = data[["weight", "sleep"]]
+    st.line_chart(chart_data)
 
 # ================================
 # INPUT
