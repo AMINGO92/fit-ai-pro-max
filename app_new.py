@@ -240,7 +240,7 @@ elif st.session_state.step == 6:
         st.stop()
 
     try:
-    data = pd.read_sql(
+        data = pd.read_sql(
         "SELECT * FROM tracking WHERE username=?",
         conn,
         params=(username,)
