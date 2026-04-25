@@ -81,6 +81,7 @@ user = c.execute(
 ).fetchone()
 
 if not user:
+    st.session_state.username = username
     st.warning(t("Login required","लॉगिन आवश्यक आहे","लॉगिन जरूरी है"))
     st.stop()
 
