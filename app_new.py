@@ -62,7 +62,7 @@ mode = st.sidebar.radio("Select", ["Login","Signup"])
 
 if mode == "Signup":
     u = st.sidebar.text_input("Username", key="signup_user")
-    p = st.sidebar.text_input("Password", type="password", "singup_pass)
+    p = st.sidebar.text_input("Password", type="password", "singup_pass")
 
     if st.sidebar.button("Create"):
         try:
