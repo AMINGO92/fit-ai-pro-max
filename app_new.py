@@ -171,6 +171,26 @@ elif st.session_state.step == 5:
 elif st.session_state.step == 6:
     st.header("📊 Dashboard")
 
+    username = st.session_state.get("username", None)
+
+    if username is None:
+        st.error("Login required")
+        st.stop()
+
+    data = pd.read_sql(
+        "SELECT * FROM user_steps WHERE username=?",
+        conn,
+        params=(username,)
+    )
+
+    if not data.empty:
+        st.success("✅ Data Loaded")
+
+        st.write(data)
+        st.line_chart(data["weight"])
+    else:
+        st.warning("No data yet")
+        
     st.write("Welcome to your dashboard")
 
 # ================================
