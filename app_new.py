@@ -210,14 +210,13 @@ elif st.session_state.step == 5:
     st.write("Diet Plan: High protein")
     st.write("Workout: Walking")
 
-    st.subheader("🍔 Food Scanner")
+st.subheader("🍔 Food Scanner")
 
-uploaded_file = st.file_uploader("Food photo upload kar")
+uploaded_file = st.file_uploader("Food photo upload kar", key="food1")
 
 if uploaded_file is not None:
     st.image(uploaded_file)
 
-    # Simple dummy output (AI नाही अजून)
     food = "Roti / Rice"
     calories = 250
 
@@ -226,8 +225,8 @@ if uploaded_file is not None:
 
     st.session_state.calories = calories
 
-    if st.button("Go to Dashboard"):
-        st.session_state.step = 6
+if st.button("Go to Dashboard"):
+    st.session_state.step = 6
 
 
 elif st.session_state.step == 6:
