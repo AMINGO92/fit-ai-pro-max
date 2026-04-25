@@ -320,33 +320,6 @@ else:
 # ================================
 # SMART SUMMARY
 # ================================
-if 'log_df' in locals() and not log_df.empty:
-
-    st.subheader("🧠 Smart Summary")
-
-    avg_steps = int(log_df["steps"].mean())
-    avg_cal = int(log_df["calories"].mean())
-    avg_sleep = round(log_df["sleep"].mean(),1)
-
-    st.write(f"Average Steps: {avg_steps}")
-    st.write(f"Average Calories: {avg_cal}")
-    st.write(f"Average Sleep: {avg_sleep} hrs")
-
-    # 🔥 AI style suggestions
-    if avg_steps < 5000:
-        st.warning("⚠️ Activity कमी आहे (steps वाढवा)")
-    else:
-        st.success("✅ Activity चांगली आहे")
-
-    if avg_sleep < 6:
-        st.warning("⚠️ Sleep कमी आहे (rest वाढवा)")
-    else:
-        st.success("✅ Sleep ठीक आहे")
-
-    if avg_cal > 2500:
-        st.warning("⚠️ Calories जास्त आहेत")
-    else:
-        st.success("✅ Calories control मध्ये आहेत")
 
 # ================================
 # AI CHAT ASSISTANT
