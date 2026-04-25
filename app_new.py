@@ -54,6 +54,21 @@ c.execute("CREATE TABLE IF NOT EXISTS tracking(username TEXT,date TEXT,weight RE
 conn.commit()
 
 # ================================
+# USER STEPS TABLE FIX
+# ================================
+c.execute("""
+CREATE TABLE IF NOT EXISTS user_steps(
+    username TEXT,
+    age REAL,
+    height REAL,
+    weight REAL,
+    sleep REAL,
+    goal TEXT,
+    date TEXT
+)
+""")
+conn.commit()
+# ================================
 # LOGIN
 # ================================
 st.sidebar.title("🔐 Account")
