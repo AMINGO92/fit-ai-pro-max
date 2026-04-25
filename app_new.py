@@ -331,6 +331,123 @@ if not log_df.empty:
         st.success("✅ Sleep ठीक आहे")
 
 # ================================
+# SMART SUMMARY
+# ================================
+if 'log_df' in locals() and not log_df.empty:
+
+    st.subheader("🧠 Smart Summary")
+
+    avg_steps = int(log_df["steps"].mean())
+    avg_cal = int(log_df["calories"].mean())
+    avg_sleep = round(log_df["sleep"].mean(),1)
+
+    st.write(f"Average Steps: {avg_steps}")
+    st.write(f"Average Calories: {avg_cal}")
+    st.write(f"Average Sleep: {avg_sleep} hrs")
+
+    # 🔥 AI style suggestions
+    if avg_steps < 5000:
+        st.warning("⚠️ Activity कमी आहे (steps वाढवा)")
+    else:
+        st.success("✅ Activity चांगली आहे")
+
+    if avg_sleep < 6:
+        st.warning("⚠️ Sleep कमी आहे (rest वाढवा)")
+    else:
+        st.success("✅ Sleep ठीक आहे")
+
+    if avg_cal > 2500:
+        st.warning("⚠️ Calories जास्त आहेत")
+    else:
+        st.success("✅ Calories control मध्ये आहेत")
+
+# ================================
+# AI CHAT ASSISTANT
+# ================================
+st.subheader("🤖 AI Health Assistant")
+
+user_q = st.text_input("Ask something about your health")
+
+def ai_reply(q, avg_steps, avg_cal, avg_sleep):
+    q = q.lower()
+
+    if "weight" in q:
+        return "Focus on calorie deficit and daily walking"
+
+    elif "diet" in q:
+        return "Increase protein, reduce junk food"
+
+    elif "sleep" in q:
+        return "Try to sleep at least 7 hours daily"
+
+    elif "steps" in q:
+        return "Target 8k–10k steps daily"
+
+    else:
+        return "Maintain balance in diet, sleep and activity"
+
+if st.button("Ask AI"):
+    if user_q and 'log_df' in locals() and not log_df.empty:
+        reply = ai_reply(user_q, avg_steps, avg_cal, avg_sleep)
+        st.success(reply)
+    else:
+        st.warning("Enter question or add data first")
+
+# ================================
+# HEALTH SCORE
+# ================================
+st.subheader("🏆 Health Score")
+
+if 'log_df' in locals() and not log_df.empty:
+
+    score = 100
+
+    if avg_steps < 5000:
+        score -= 20
+
+    if avg_sleep < 6:
+        score -= 20
+
+    if avg_cal > 2500:
+        score -= 20
+
+    st.metric("Your Health Score", score)
+
+    if score > 80:
+        st.success("🔥 Excellent Health")
+    elif score > 60:
+        st.warning("⚠️ सुधारणा आवश्यक")
+    else:
+        st.error("🚨 Health Risk")
+
+# ================================
+# DAILY PLAN
+# ================================
+st.subheader("📅 Your Daily Plan")
+
+if 'log_df' in locals() and not log_df.empty:
+
+    st.write("💧 Water:", round(st.session_state.weight / 20, 2), "L")
+
+    if avg_steps < 5000:
+        st.write("🚶 Walk at least 8000 steps")
+    else:
+        st.write("✅ Maintain your activity")
+
+    if avg_sleep < 6:
+        st.write("😴 Sleep at least 7 hours")
+    else:
+        st.write("✅ Sleep is good")
+
+    if avg_cal > 2500:
+        st.write("🍽️ Reduce calorie intake")
+    else:
+        st.write("✅ Diet is balanced")
+
+
+
+
+# ================================
 # DAILY LOG FORM
 # ================================
 st.subheader("📝 Daily Log")
