@@ -385,7 +385,8 @@ if not df.empty and len(df) >= 3:
 # ================================
 # FINAL
 # ================================
-st.info(f"💧 Water: {round(weight/20,2)}L")
+if "weight" in st.session_state:
+    st.info(f"💧 Water: {round(st.session_state.weight/20,2)}L")
 
 if burn > calories:
     st.success("🔥 Fat Loss Mode")
