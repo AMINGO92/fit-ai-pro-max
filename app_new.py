@@ -61,8 +61,8 @@ st.sidebar.title("🔐 Account")
 mode = st.sidebar.radio("Select", ["Login","Signup"])
 
 if mode == "Signup":
-    u = st.sidebar.text_input("Username")
-    p = st.sidebar.text_input("Password", type="password")
+    u = st.sidebar.text_input("Username", key="signup_user")
+    p = st.sidebar.text_input("Password", type="password", "singup_pass)
 
     if st.sidebar.button("Create"):
         try:
@@ -72,8 +72,8 @@ if mode == "Signup":
         except:
             st.sidebar.error("Username Exists")
 
-username = st.sidebar.text_input("Username")
-password = st.sidebar.text_input("Password", type="password")
+username = st.sidebar.text_input("Username", key="login_user")
+password = st.sidebar.text_input("Password", type="password", key="login_pass")
 
 user = c.execute(
     "SELECT * FROM users WHERE username=? AND password=?",
