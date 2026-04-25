@@ -208,34 +208,34 @@ elif st.session_state.step == 6:
 # ================================
 # 🔮 FUTURE PREDICTION
 # ================================
-days = st.slider("Days", 1, 365, 30)
+# days = st.slider("Days", 1, 365, 30)
 
-future = max(weight - (daily_deficit*days/7700), 30)
+# future = max(weight - (daily_deficit*days/7700), 30)
 
-st.write(f"📅 After {days} days: {round(future,2)} kg")
+# st.write(f"📅 After {days} days: {round(future,2)} kg")
 
-target = st.number_input(
-    "Target Weight",
-    min_value=30.0,
-    max_value=200.0,
-    value=60.0,
-    step=1.0
-)
+# target = st.number_input(
+#     "Target Weight",
+#     min_value=30.0,
+#     max_value=200.0,
+#     value=60.0,
+#     step=1.0
+# )
 
-if target > weight:
-    st.warning("Target weight should be below current weight for fat loss")
+# if target > weight:
+#     st.warning("Target weight should be below current weight for fat loss")
 
-remaining = weight-target
+# remaining = weight-target
 
-progress=((weight-target)/weight)*100
+# progress=((weight-target)/weight)*100
 
-st.subheader("🎯 Goal Tracker")
+# st.subheader("🎯 Goal Tracker")
 
-st.write(f"Remaining: {round(remaining,2)} kg")
+# st.write(f"Remaining: {round(remaining,2)} kg")
 
-st.progress(
-int(max(0,min(progress,100)))
-)
+# st.progress(
+# int(max(0,min(progress,100)))
+# )
 
 # ================================
 # 🧠 NLP
