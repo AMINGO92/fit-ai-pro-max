@@ -239,6 +239,38 @@ elif st.session_state.step == 6:
         st.error("Login required")
         st.stop()
 
+   # Latest record काढ
+if not data.empty:
+    latest = data.iloc[-1]
+
+    st.subheader("📌 Latest Summary")
+
+    st.write(f"Weight: {latest['weight']} kg")
+    st.write(f"Sleep: {latest['sleep']} hrs")
+    st.write(f"Goal: {latest['goal']}")
+else:
+    st.warning("No data available")
+
+# 🍔 Food Calories
+calories = st.session_state.get("calories", 0)
+
+st.subheader("🍔 Today Food")
+st.write(f"Calories: {calories}")
+
+# 🔥 Health Suggestion
+if not data.empty and calories > 0:
+    if calories > latest["weight"] * 20:
+        st.error("⚠️ Calories जास्त आहेत")
+    else:
+        st.success("✅ Calories control मध्ये आहेत")
+
+# 📊 Graph
+if not data.empty:
+    st.subheader("📊 Progress Overview")
+    chart_data = data[["weight", "sleep"]]
+    st.line_chart(chart_data)
+
+    
     # ================================
     # LOAD MAIN DATA
     # ================================
@@ -407,37 +439,6 @@ if 'log_df' in locals() and not log_df.empty:
 # ================================
 # EXTRA DASHBOARD FEATURES
 # ================================
-
-    # Latest record काढ
-if not data.empty:
-    latest = data.iloc[-1]
-
-    st.subheader("📌 Latest Summary")
-
-    st.write(f"Weight: {latest['weight']} kg")
-    st.write(f"Sleep: {latest['sleep']} hrs")
-    st.write(f"Goal: {latest['goal']}")
-else:
-    st.warning("No data available")
-
-# 🍔 Food Calories
-calories = st.session_state.get("calories", 0)
-
-st.subheader("🍔 Today Food")
-st.write(f"Calories: {calories}")
-
-# 🔥 Health Suggestion
-if not data.empty and calories > 0:
-    if calories > latest["weight"] * 20:
-        st.error("⚠️ Calories जास्त आहेत")
-    else:
-        st.success("✅ Calories control मध्ये आहेत")
-
-# 📊 Graph
-if not data.empty:
-    st.subheader("📊 Progress Overview")
-    chart_data = data[["weight", "sleep"]]
-    st.line_chart(chart_data)
 
 # ================================
 # INPUT
