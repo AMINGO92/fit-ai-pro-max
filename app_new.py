@@ -354,6 +354,11 @@ st.subheader("🏆 Health Score")
 
 if 'log_df' in locals() and not log_df.empty:
 
+    # 🔥 IMPORTANT (हे missing होतं)
+    avg_steps = int(log_df["steps"].mean())
+    avg_cal = int(log_df["calories"].mean())
+    avg_sleep = round(log_df["sleep"].mean(),1)
+
     score = 100
 
     if avg_steps < 5000:
