@@ -245,7 +245,7 @@ elif st.session_state.step == 6:
         conn,
         params=(username,)
     )
-except:
+    except:
     data = pd.DataFrame()
 
     if not data.empty:
