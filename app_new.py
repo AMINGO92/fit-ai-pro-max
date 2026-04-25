@@ -51,6 +51,19 @@ food_df = pd.read_csv("indian_food.csv")
 
 c.execute("CREATE TABLE IF NOT EXISTS users(username TEXT PRIMARY KEY,password TEXT)")
 c.execute("CREATE TABLE IF NOT EXISTS tracking(username TEXT,date TEXT,weight REAL,steps REAL,calories REAL,sleep REAL)")
+# ================================
+# DAILY LOG TABLE
+# ================================
+c.execute("""
+CREATE TABLE IF NOT EXISTS daily_log(
+    username TEXT,
+    date TEXT,
+    steps REAL,
+    calories REAL,
+    sleep REAL,
+    notes TEXT
+)
+""")
 conn.commit()
 
 # ================================
