@@ -239,11 +239,14 @@ elif st.session_state.step == 6:
         st.error("Login required")
         st.stop()
 
+    try:
     data = pd.read_sql(
-        "SELECT * FROM user_steps WHERE username=?",
+        "SELECT * FROM tracking WHERE username=?",
         conn,
         params=(username,)
     )
+except:
+    data = pd.DataFrame()
 
     if not data.empty:
         st.success("✅ Data Loaded")
