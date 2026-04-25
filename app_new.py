@@ -290,6 +290,47 @@ else:
     st.warning("No daily logs yet")
 
 # ================================
+# REPORT DOWNLOAD
+# ================================
+st.subheader("📄 Export Report")
+
+if 'log_df' in locals() and not log_df.empty:
+    csv = log_df.to_csv(index=False)
+
+    st.download_button(
+        label="Download CSV Report",
+        data=csv,
+        file_name="health_report.csv",
+        mime="text/csv"
+    )
+else:
+    st.info("No data to export")
+
+# ================================
+# SMART SUMMARY
+# ================================
+if not log_df.empty:
+    st.subheader("🧠 Smart Summary")
+
+    avg_steps = int(log_df["steps"].mean())
+    avg_cal = int(log_df["calories"].mean())
+    avg_sleep = round(log_df["sleep"].mean(),1)
+
+    st.write(f"Average Steps: {avg_steps}")
+    st.write(f"Average Calories: {avg_cal}")
+    st.write(f"Average Sleep: {avg_sleep} hrs")
+
+    if avg_steps < 5000:
+        st.warning("⚠️ Activity कमी आहे")
+    else:
+        st.success("✅ Activity चांगली आहे")
+
+    if avg_sleep < 6:
+        st.warning("⚠️ Sleep कमी आहे")
+    else:
+        st.success("✅ Sleep ठीक आहे")
+
+# ================================
 # DAILY LOG FORM
 # ================================
 st.subheader("📝 Daily Log")
