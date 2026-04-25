@@ -172,7 +172,6 @@ elif st.session_state.step == 4:
     if st.button("Generate Plan"):
         st.session_state.goal = goal
 
-        # ✅ SAVE DATA (IMPORTANT)
         c.execute(
             "INSERT INTO user_steps VALUES (?,?,?,?,?,?,?)",
             (
@@ -188,7 +187,6 @@ elif st.session_state.step == 4:
         conn.commit()
 
         st.success("✅ Data Saved")
-
         st.session_state.step = 5
 
 
@@ -210,113 +208,83 @@ elif st.session_state.step == 5:
     st.write("Diet Plan: High protein")
     st.write("Workout: Walking")
 
-st.subheader("🍔 Food Scanner")
+    # ✅ FOOD SCANNER (इथेच हवा)
+    st.subheader("🍔 Food Scanner")
 
-uploaded_file = st.file_uploader("Food photo upload kar", key="food1")
+    uploaded_file = st.file_uploader("Food photo upload kar")
 
-if uploaded_file is not None:
-    st.image(uploaded_file)
+    if uploaded_file is not None:
+        st.image(uploaded_file)
 
-    food = "Roti / Rice"
-    calories = 250
+        food = "Roti / Rice"
+        calories = 250
 
-    st.success(f"Food: {food}")
-    st.info(f"Calories: {calories}")
+        st.success(f"Food: {food}")
+        st.info(f"Calories: {calories}")
 
-    st.session_state.calories = calories
+        st.session_state.calories = calories
 
-if st.button("Go to Dashboard"):
-    st.session_state.step = 6
+    if st.button("Go to Dashboard"):
+        st.session_state.step = 6
 
 
 elif st.session_state.step == 6:
 
     st.header("📊 Dashboard")
 
-    username = st.session_state.get("username", None)
+    username = st.session_state.get("username")
 
-    if username is None:
-        st.error("Login required")
-        st.stop()
-
-   # Latest record काढ
-if not data.empty:
-    latest = data.iloc[-1]
-
-    st.subheader("📌 Latest Summary")
-
-    st.write(f"Weight: {latest['weight']} kg")
-    st.write(f"Sleep: {latest['sleep']} hrs")
-    st.write(f"Goal: {latest['goal']}")
-else:
-    st.warning("No data available")
-
-# 🍔 Food Calories
-calories = st.session_state.get("calories", 0)
-
-st.subheader("🍔 Today Food")
-st.write(f"Calories: {calories}")
-
-# 🔥 Health Suggestion
-if not data.empty and calories > 0:
-    if calories > latest["weight"] * 20:
-        st.error("⚠️ Calories जास्त आहेत")
-    else:
-        st.success("✅ Calories control मध्ये आहेत")
-
-# 📊 Graph
-if not data.empty:
-    st.subheader("📊 Progress Overview")
-    chart_data = data[["weight", "sleep"]]
-    st.line_chart(chart_data)
-
-    
-    # ================================
-    # LOAD MAIN DATA
-    # ================================
-    try:
-        data = pd.read_sql(
-            "SELECT * FROM tracking WHERE username=?",
-            conn,
-            params=(username,)
-        )
-    except:
-        data = pd.DataFrame()
+    # ✅ DATA LOAD (IMPORTANT)
+    data = pd.read_sql(
+        "SELECT * FROM user_steps WHERE username=?",
+        conn,
+        params=(username,)
+    )
 
     if not data.empty:
-        st.success("✅ Data Loaded")
-        st.write(data)
-        st.line_chart(data["weight"])
+        latest = data.iloc[-1]
+
+        st.subheader("📌 Latest Summary")
+        st.write(f"Weight: {latest['weight']} kg")
+        st.write(f"Sleep: {latest['sleep']} hrs")
+        st.write(f"Goal: {latest['goal']}")
     else:
-        st.warning("No data yet")
+        st.warning("No data available")
 
-    st.write("Welcome to your dashboard")
+    # 🍔 Food
+    calories = st.session_state.get("calories", 0)
 
-    # ================================
-    # 📝 DAILY LOG (INSIDE STEP 6)
-    # ================================
+    st.subheader("🍔 Today Food")
+    st.write(f"Calories: {calories}")
+
+    # 📊 Graph
+    if not data.empty:
+        st.subheader("📊 Progress Overview")
+        st.line_chart(data[["weight","sleep"]])
+
+    # ======================
+    # DAILY LOG
+    # ======================
     st.subheader("📝 Daily Log")
 
     today = str(datetime.date.today())
 
-    steps = st.number_input("Steps", 0, key="steps1")
-    cal = st.number_input("Calories Today", 0, key="cal1")
-    sleep_today = st.number_input("Sleep Today (hrs)", 0.0, key="sleep1")
-    notes = st.text_input("Notes", key="notes1")
+    steps = st.number_input("Steps", 0)
+    cal = st.number_input("Calories Today", 0)
+    sleep_today = st.number_input("Sleep Today", 0.0)
+    notes = st.text_input("Notes")
 
-    if st.button("Save Today", key="save1"):
+    if st.button("Save Today"):
         c.execute(
             "INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
             (username, today, steps, cal, sleep_today, notes)
         )
         conn.commit()
-        st.success("✅ Today Saved")
+        st.success("Saved")
 
-    # ================================
-    # 📅 LAST 30 DAYS
-    # ================================
-    st.subheader("📅 Last 30 Days")
-
+    # ======================
+    # LAST 30 DAYS
+    # ======================
     log_df = pd.read_sql(
         "SELECT * FROM daily_log WHERE username=? ORDER BY date DESC LIMIT 30",
         conn,
@@ -324,13 +292,7 @@ if not data.empty:
     )
 
     if not log_df.empty:
-        st.write(log_df)
-
-        st.line_chart(
-            log_df.set_index("date")[["steps", "calories", "sleep"]]
-        )
-    else:
-        st.warning("No daily logs yet")
+        st.line_chart(log_df.set_index("date")[["steps","calories","sleep"]])
 
 # ================================
 # REPORT DOWNLOAD
