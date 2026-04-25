@@ -246,7 +246,7 @@ elif st.session_state.step == 6:
         params=(username,)
     )
     except:
-    data = pd.DataFrame()
+        data = pd.DataFrame()
 
     if not data.empty:
         st.success("✅ Data Loaded")
