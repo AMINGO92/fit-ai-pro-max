@@ -158,6 +158,24 @@ elif st.session_state.step == 4:
 
     if st.button("Generate Plan"):
         st.session_state.goal = goal
+
+        # ✅ SAVE DATA (IMPORTANT)
+        c.execute(
+            "INSERT INTO user_steps VALUES (?,?,?,?,?,?,?)",
+            (
+                st.session_state.username,
+                st.session_state.age,
+                st.session_state.height,
+                st.session_state.weight,
+                st.session_state.sleep,
+                goal,
+                str(datetime.date.today())
+            )
+        )
+        conn.commit()
+
+        st.success("✅ Data Saved")
+
         st.session_state.step = 5
 
 
@@ -352,13 +370,6 @@ def health_risk(bmi, sleep, calories, burn):
 # ================================
 # SAVE
 # ================================
-if st.button("💾 Save"):
-    c.execute(
-        "INSERT INTO tracking VALUES (?,?,?,?,?,?)",
-        (username,str(datetime.date.today()),weight,steps,calories,sleep)
-    )
-    conn.commit()
-    st.success("Saved")
 
 # ================================
 # 🧪 MEDICAL AI
