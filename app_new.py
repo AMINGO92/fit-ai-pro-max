@@ -215,7 +215,7 @@ if uploaded_file is not None:
     st.image(uploaded_file)
 
     import google.generativeai as genai
-    genai.configure(api_key="YOUR_API_KEY")   # 🔥 इथे तुझी key टाक
+    genai.configure(api_key="AIzaSyBjmWDbovBjiLlTWFbtrm5o4t_vQAzgdmM")   # 🔥 इथे तुझी key टाक
 
     model = genai.GenerativeModel("models/gemini-2.5-flash")
 
