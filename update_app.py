@@ -173,7 +173,8 @@ elif st.session_state.step == 4:
     age = st.session_state.age
 
     # ================= TAB 1 =================
-    with tab1:    
+    with tab1:
+
     # ================= BODY =================
     st.markdown('<div class="section">', unsafe_allow_html=True)
 
@@ -210,8 +211,9 @@ elif st.session_state.step == 4:
     st.markdown('</div>', unsafe_allow_html=True)
 
     # ================= ANALYSIS =================
-    if not log.empty:
-
+    if log.empty:
+        st.info("📊 Please add daily data to see analysis")
+    else:
         avg_steps = int(log["steps"].mean())
         avg_cal = int(log["calories"].mean())
 
@@ -226,6 +228,7 @@ elif st.session_state.step == 4:
         col1.metric("Burn", round(burn))
         col2.metric("Calories", avg_cal)
 
+        # ✅ Safe condition
         if deficit < 0:
             st.error("⚠️ Weight वाढतो आहे (Calorie जास्त आहे)")
         else:
@@ -254,7 +257,6 @@ elif st.session_state.step == 4:
         st.write(f"Protein: {round(weight_now*2)} g")
 
         st.markdown('</div>', unsafe_allow_html=True)
-
     # ================= TAB 2 =================
     with tab2:
 
