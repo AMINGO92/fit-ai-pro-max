@@ -207,16 +207,25 @@ elif st.session_state.step == 5:
     st.write("Diet Plan: High protein")
     st.write("Workout: Walking")
 
-    # ✅ FOOD SCANNER (इथेच हवा)
-    st.subheader("🍔 Food Scanner")
+st.subheader("🍔 Food Scanner")
 
-    uploaded_file = st.file_uploader("Food photo upload kar")
+uploaded_file = st.file_uploader("Food photo upload kar")
 
-    if uploaded_file is not None:
-        st.image(uploaded_file)
+if uploaded_file is not None:
+    st.image(uploaded_file)
 
-        food = "Roti / Rice"
-        calories = 250
+    import google.generativeai as genai
+    genai.configure(api_key="YOUR_API_KEY")   # 🔥 इथे तुझी key टाक
+
+    model = genai.GenerativeModel("models/gemini-2.5-flash")
+
+    response = model.generate_content([
+        {"mime_type": uploaded_file.type, "data": uploaded_file.read()},
+        "Identify the food item and estimate calories in short (1-2 lines)"
+    ])
+
+    st.success("🍔 AI Result")
+    st.write(response.text)
 
         st.success(f"Food: {food}")
         st.info(f"Calories: {calories}")
