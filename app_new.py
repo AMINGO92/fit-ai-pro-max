@@ -566,7 +566,7 @@ def health_risk(bmi, sleep, calories, burn):
 
 st.subheader("🧪 Medical AI")
 
-api_key = "AIzaSyDwctXJJU83_R44QkblvypDOVjWSY3DFu4"
+api_key = "AIzaSyBjmWDbovBjiLlTWFbtrm5o4t_vQAzgdmM"
 
 medical_files = st.file_uploader(
     "Upload Medical Report",
