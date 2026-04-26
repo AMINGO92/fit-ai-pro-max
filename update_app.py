@@ -175,38 +175,42 @@ elif st.session_state.step == 4:
     # ================= TAB 1 =================
     with tab1:
 
-        st.markdown('<div class="section">', unsafe_allow_html=True)
+    # ================= BODY =================
+    st.markdown('<div class="section">', unsafe_allow_html=True)
 
-        bmi = weight_now / ((height/100)**2)
-        bmr = 10*weight_now + 6.25*height - 5*age + 5
-        body_fat = (1.2*bmi) + (0.23*age) - 16.2
+    bmi = weight_now / ((height/100)**2)
+    bmr = 10*weight_now + 6.25*height - 5*age + 5
+    body_fat = (1.2*bmi) + (0.23*age) - 16.2
 
-        st.subheader("🧠 Body Metrics")
+    st.subheader("🧠 Body Metrics")
 
-        col1, col2, col3 = st.columns(3)
-        col1.metric("BMI",round(bmi,2))
-        col2.metric("BMR",round(bmr))
-        col3.metric("Body Fat %",round(body_fat,2))
+    col1, col2, col3 = st.columns(3)
+    col1.metric("BMI", round(bmi,2))
+    col2.metric("BMR", round(bmr))
+    col3.metric("Body Fat %", round(body_fat,2))
 
-        st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="section">', unsafe_allow_html=True)
+    # ================= DAILY =================
+    st.markdown('<div class="section">', unsafe_allow_html=True)
 
-        st.subheader("📝 Daily Log")
-        col1, col2 = st.columns(2)
-        steps = col1.number_input("Steps",0)
-        cal = col2.number_input("Calories",0)
+    st.subheader("📝 Daily Log")
 
-        if st.button("💾 Save Today"):
-            today = str(datetime.date.today())
-            c.execute("DELETE FROM daily_log WHERE username=? AND date=?",(username,today))
-            c.execute("INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
-                      (username,today,steps,cal,0,""))
-            conn.commit()
-            st.success("Saved")
+    col1, col2 = st.columns(2)
+    steps = col1.number_input("Steps",0)
+    cal = col2.number_input("Calories",0)
 
-        st.markdown('</div>', unsafe_allow_html=True)
-    
+    if st.button("💾 Save Today"):
+        today = str(datetime.date.today())
+        c.execute("DELETE FROM daily_log WHERE username=? AND date=?", (username,today))
+        c.execute("INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
+                  (username,today,steps,cal,0,""))
+        conn.commit()
+        st.success("Saved")
+
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # ================= ANALYSIS =================
     if not log.empty:
 
         avg_steps = int(log["steps"].mean())
@@ -215,46 +219,42 @@ elif st.session_state.step == 4:
         burn = avg_steps * 0.04
         deficit = burn - avg_cal
 
+        st.markdown('<div class="section">', unsafe_allow_html=True)
+
         st.subheader("🔥 Burn vs Intake")
-        st.write("Burn:", burn)
-        st.write("Calories:", avg_cal)
 
-    if deficit < 0:
-        st.error("⚠️ Weight वाढतो आहे (Calorie जास्त आहे)")
-    else:
-        st.success("🔥 Weight कमी होतो आहे (Fat Loss Mode)")
+        col1, col2 = st.columns(2)
+        col1.metric("Burn", round(burn))
+        col2.metric("Calories", avg_cal)
 
-            
+        if deficit < 0:
+            st.error("⚠️ Weight वाढतो आहे (Calorie जास्त आहे)")
+        else:
+            st.success("🔥 Weight कमी होतो आहे (Fat Loss Mode)")
 
-            st.markdown('<div class="section">', unsafe_allow_html=True)
+        st.progress(min(100, int((burn/(avg_cal+1))*100)))
 
-            st.subheader("🔥 Burn vs Intake")
-            col1, col2 = st.columns(2)
-            col1.metric("Burn",round(burn))
-            col2.metric("Calories",avg_cal)
+        st.subheader("🧬 Prediction")
+        st.info(f"7 Days → {round(weight_now-(deficit*7/7700),2)} kg")
+        st.info(f"30 Days → {round(weight_now-(deficit*30/7700),2)} kg")
 
-            st.progress(min(100,int((burn/(avg_cal+1))*100)))
+        days = st.slider("Days", 1, 90, 30)
+        st.success(f"Future → {round(weight_now-(deficit*days/7700),2)} kg")
 
-            st.subheader("🧬 Prediction")
-            st.info(f"7 Days → {round(weight_now-(deficit*7/7700),2)} kg")
-            st.info(f"30 Days → {round(weight_now-(deficit*30/7700),2)} kg")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-            days = st.slider("Days",1,90,30)
-            st.success(f"Future → {round(weight_now-(deficit*days/7700),2)} kg")
+        # ================= DIET =================
+        st.markdown('<div class="section">', unsafe_allow_html=True)
 
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.subheader("🥗 Diet Plan")
 
-            st.markdown('<div class="section">', unsafe_allow_html=True)
+        maintenance = weight_now * 30
+        total = maintenance - 400 if latest['goal']=="Fat Loss" else maintenance + 400
 
-            st.subheader("🥗 Diet Plan")
+        st.write(f"Calories: {round(total)}")
+        st.write(f"Protein: {round(weight_now*2)} g")
 
-            maintenance = weight_now * 30
-            total = maintenance - 400 if latest['goal']=="Fat Loss" else maintenance + 400
-
-            st.write(f"Calories: {round(total)}")
-            st.write(f"Protein: {round(weight_now*2)}g")
-
-            st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
     # ================= TAB 2 =================
     with tab2:
