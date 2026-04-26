@@ -101,11 +101,19 @@ if st.session_state.step == 1:
 elif st.session_state.step == 2:
     st.markdown("### 📏 Body Details")
 
-    col1, col2, col3 = st.columns(3)
-    age = col1.number_input("Age",25)
-    height = col2.number_input("Height",170)
-    weight = col3.number_input("Weight",70.0)
+    # ✅ Dynamic default (first time only)
+    age_default = st.session_state.get("age", 25)
+    height_default = st.session_state.get("height", 170)
+    weight_default = st.session_state.get("weight", 70.0)
 
+    col1, col2, col3 = st.columns(3)
+
+    # ✅ Inputs (user change = auto update)
+    age = col1.number_input("Age", value=age_default, step=1)
+    height = col2.number_input("Height (cm)", value=height_default, step=1)
+    weight = col3.number_input("Weight (kg)", value=weight_default, step=0.5)
+
+    # ✅ Save ONLY when Next clicked
     if st.button("Next ➡"):
         st.session_state.age = age
         st.session_state.height = height
