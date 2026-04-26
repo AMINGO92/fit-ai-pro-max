@@ -199,7 +199,6 @@ elif st.session_state.step == 5:
     bmi = weight / ((height/100)**2)
 
     st.metric("BMI", round(bmi,2))
-
     if bmi > 25:
         st.warning("Fat loss needed")
     else:
