@@ -4,10 +4,34 @@ import sqlite3
 import datetime
 import google.generativeai as genai
 import os
+import numpy as np
 
 st.set_page_config(page_title="Fit AI Pro MAX", layout="wide")
 
 API_KEY = os.getenv("GEMINI_API_KEY")
+
+# ================= UI STYLE =================
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(135deg,#eef2ff,#f8fafc);
+}
+.block-container {
+    padding-top: 1rem;
+}
+h1 {
+    text-align: center;
+    color: #4f46e5;
+}
+.section {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    box-shadow: 0px 3px 10px rgba(0,0,0,0.06);
+    margin-bottom: 15px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # ================= DATABASE =================
 conn = sqlite3.connect("health.db", check_same_thread=False)
@@ -43,6 +67,23 @@ if not user:
     st.warning("Login required")
     st.stop()
 
+# ================= NLP =================
+def detect_intent(text):
+    text = text.lower()
+    if "diet" in text: return "diet"
+    if "weight" in text: return "weight"
+    if "calorie" in text: return "calorie"
+    return "general"
+
+def smart_reply(q, bmi, burn, cal):
+    intent = detect_intent(q)
+
+    if intent == "diet":
+        return "Increase protein, reduce sugar"
+    if intent == "weight":
+        return "Fat loss mode" if burn > cal else "Weight gain risk"
+    return "Maintain balance"
+
 # ================= STEP =================
 if "step" not in st.session_state:
     st.session_state.step = 1
@@ -51,26 +92,31 @@ st.title("🔥 Fit AI Pro MAX")
 
 # ================= FLOW =================
 if st.session_state.step == 1:
-    sleep = st.number_input("Sleep",7.0)
-    if st.button("Next"):
+    st.markdown("### 😴 Sleep")
+    sleep = st.number_input("Hours",7.0)
+    if st.button("Next ➡"):
         st.session_state.sleep = sleep
         st.session_state.step = 2
 
 elif st.session_state.step == 2:
-    age = st.number_input("Age",25)
-    height = st.number_input("Height",170)
-    weight = st.number_input("Weight",70.0)
+    st.markdown("### 📏 Body Details")
 
-    if st.button("Next"):
+    col1, col2, col3 = st.columns(3)
+    age = col1.number_input("Age",25)
+    height = col2.number_input("Height",170)
+    weight = col3.number_input("Weight",70.0)
+
+    if st.button("Next ➡"):
         st.session_state.age = age
         st.session_state.height = height
         st.session_state.weight = weight
         st.session_state.step = 3
 
 elif st.session_state.step == 3:
-    goal = st.selectbox("Goal",["Fat Loss","Muscle Gain"])
+    st.markdown("### 🎯 Goal")
+    goal = st.selectbox("Select Goal",["Fat Loss","Muscle Gain"])
 
-    if st.button("Save"):
+    if st.button("Save & Continue"):
         c.execute("INSERT INTO user_steps VALUES (?,?,?,?,?,?,?)",
                   (username,
                    st.session_state.age,
@@ -82,120 +128,160 @@ elif st.session_state.step == 3:
         conn.commit()
         st.session_state.step = 4
 
+# ================= DASHBOARD =================
 elif st.session_state.step == 4:
 
-    st.header("📊 Dashboard")
+    tab1, tab2, tab3 = st.tabs(["📊 Dashboard","🍔 Food","🤖 AI Coach"])
 
     data = pd.read_sql("SELECT * FROM user_steps WHERE username=?",conn,params=(username,))
+    log = pd.read_sql("SELECT * FROM daily_log WHERE username=?",conn,params=(username,))
+    food_df = pd.read_sql("SELECT * FROM food_log WHERE username=?",conn,params=(username,))
 
-    if not data.empty:
-        latest = data.iloc[-1]
+    latest = data.iloc[-1]
+    weight_now = latest['weight']
+    height = st.session_state.height
+    age = st.session_state.age
 
-        st.subheader("📌 Summary")
-        st.write(f"Weight: {latest['weight']} kg")
-        st.write(f"Goal: {latest['goal']}")
+    # ================= TAB 1 =================
+    with tab1:
 
-        weight_now = latest['weight']
-        height = st.session_state.height
-        age = st.session_state.age
+        st.markdown('<div class="section">', unsafe_allow_html=True)
 
-        # BODY ENGINE
         bmi = weight_now / ((height/100)**2)
         bmr = 10*weight_now + 6.25*height - 5*age + 5
         body_fat = (1.2*bmi) + (0.23*age) - 16.2
 
-        st.subheader("🧠 Body")
-        st.write("BMI:", round(bmi,2))
-        st.write("BMR:", round(bmr))
-        st.write("Body Fat:", round(body_fat,2))
+        st.subheader("🧠 Body Metrics")
 
-        st.line_chart(data[["weight","sleep"]])
+        col1, col2, col3 = st.columns(3)
+        col1.metric("BMI",round(bmi,2))
+        col2.metric("BMR",round(bmr))
+        col3.metric("Body Fat %",round(body_fat,2))
 
-    # DAILY LOG
-    st.subheader("📝 Daily")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-    steps = st.number_input("Steps",0)
-    cal = st.number_input("Calories",0)
-    sl = st.number_input("Sleep",0.0)
+        st.markdown('<div class="section">', unsafe_allow_html=True)
 
-    if st.button("Save Today"):
-        c.execute("DELETE FROM daily_log WHERE username=? AND date=?",(username,str(datetime.date.today())))
-        c.execute("INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
-                  (username,str(datetime.date.today()),steps,cal,sl,""))
-        conn.commit()
+        st.subheader("📝 Daily Log")
+        col1, col2 = st.columns(2)
+        steps = col1.number_input("Steps",0)
+        cal = col2.number_input("Calories",0)
 
-    df = pd.read_sql("SELECT * FROM daily_log WHERE username=?",conn,params=(username,))
+        if st.button("💾 Save Today"):
+            today = str(datetime.date.today())
+            c.execute("DELETE FROM daily_log WHERE username=? AND date=?",(username,today))
+            c.execute("INSERT INTO daily_log VALUES (?,?,?,?,?,?)",
+                      (username,today,steps,cal,0,""))
+            conn.commit()
+            st.success("Saved")
 
-    if not df.empty:
-        avg_steps = int(df["steps"].mean())
-        avg_cal = int(df["calories"].mean())
-        avg_sleep = round(df["sleep"].mean(),1)
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        # BURN
-        burn = avg_steps * 0.04
-        st.subheader("🔥 Burn")
-        st.write("Burn:", burn)
-        st.write("Calories:", avg_cal)
+        if not log.empty:
 
-        # DIGITAL TWIN
-        st.subheader("🧬 Prediction")
-        deficit = burn - avg_cal
-        days = st.slider("Days",1,90,30)
-        future = weight_now - (deficit*days/7700)
+            avg_steps = int(log["steps"].mean())
+            avg_cal = int(log["calories"].mean())
 
-        st.write("Future Weight:", round(future,2))
+            burn = avg_steps * 0.04
+            deficit = burn - avg_cal
 
-        # GOAL
-        st.subheader("🎯 Goal")
-        target = st.number_input("Target",60.0)
-        st.write("Remaining:", round(weight_now-target,2))
+            st.markdown('<div class="section">', unsafe_allow_html=True)
 
-        # DIET
-        st.subheader("🥗 Diet")
-        maintenance = weight_now * 30
+            st.subheader("🔥 Burn vs Intake")
+            col1, col2 = st.columns(2)
+            col1.metric("Burn",round(burn))
+            col2.metric("Calories",avg_cal)
 
-        if latest['goal']=="Fat Loss":
-            total = maintenance - 400
-        else:
-            total = maintenance + 400
+            st.progress(min(100,int((burn/(avg_cal+1))*100)))
 
-        protein = weight_now * 2
-        carbs = total/4
-        fat = total*0.25/9
+            st.subheader("🧬 Prediction")
+            st.info(f"7 Days → {round(weight_now-(deficit*7/7700),2)} kg")
+            st.info(f"30 Days → {round(weight_now-(deficit*30/7700),2)} kg")
 
-        st.write("Calories:", round(total))
-        st.write("Protein:", round(protein))
-        st.write("Carbs:", round(carbs))
-        st.write("Fat:", round(fat))
+            days = st.slider("Days",1,90,30)
+            st.success(f"Future → {round(weight_now-(deficit*days/7700),2)} kg")
 
-    # FOOD AI
-    st.subheader("🍔 Food AI")
-    file = st.file_uploader("Upload food")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    if file and API_KEY:
-        genai.configure(api_key=API_KEY)
-        model = genai.GenerativeModel("models/gemini-2.5-flash")
+            st.markdown('<div class="section">', unsafe_allow_html=True)
 
-        res = model.generate_content([
-            {"mime_type": file.type, "data": file.read()},
-            "Give calories and macros"
-        ])
+            st.subheader("🥗 Diet Plan")
 
-        st.write(res.text)
+            maintenance = weight_now * 30
+            total = maintenance - 400 if latest['goal']=="Fat Loss" else maintenance + 400
 
-    # MEDICAL AI
-    st.subheader("🧪 Medical AI")
-    files = st.file_uploader("Upload report",accept_multiple_files=True)
+            st.write(f"Calories: {round(total)}")
+            st.write(f"Protein: {round(weight_now*2)}g")
 
-    if files and API_KEY:
-        genai.configure(api_key=API_KEY)
-        model = genai.GenerativeModel("models/gemini-2.5-flash")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        for f in files:
-            res = model.generate_content([
-                {"mime_type": f.type, "data": f.read()},
-                "Explain report simply"
-            ])
-            st.write(res.text)
+    # ================= TAB 2 =================
+    with tab2:
+
+        st.markdown('<div class="section">', unsafe_allow_html=True)
+
+        st.subheader("🍔 Food Scanner")
+
+        file = st.file_uploader("Upload food")
+
+        if file and API_KEY:
+            with st.spinner("Analyzing..."):
+                genai.configure(api_key=API_KEY)
+                model = genai.GenerativeModel("models/gemini-2.5-flash")
+
+                res = model.generate_content([
+                    {"mime_type": file.type, "data": file.read()},
+                    "Give calories number only"
+                ])
+
+                st.success("Done")
+                st.write(res.text)
+
+                if st.button("Save Food"):
+                    c.execute("INSERT INTO food_log VALUES (?,?,?,?)",
+                              (username,str(datetime.date.today()),res.text,200))
+                    conn.commit()
+
+        if not food_df.empty:
+            st.metric("Total Calories",int(food_df["calories"].sum()))
+
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    # ================= TAB 3 =================
+    with tab3:
+
+        st.markdown('<div class="section">', unsafe_allow_html=True)
+
+        st.subheader("🤖 AI Coach")
+
+        user_q = st.text_input("Ask anything")
+
+        if user_q and API_KEY:
+            with st.spinner("Thinking..."):
+                genai.configure(api_key=API_KEY)
+                model = genai.GenerativeModel("models/gemini-2.5-flash")
+
+                context = f"BMI:{round(bmi,2)} Steps:{avg_steps if not log.empty else 0}"
+
+                res = model.generate_content(context + user_q)
+
+                st.success("Answer")
+                st.write(res.text)
+
+                st.info("Tip: " + smart_reply(user_q,bmi,burn,avg_cal))
+
+        st.subheader("🧪 Medical AI")
+
+        files = st.file_uploader("Upload report",accept_multiple_files=True)
+
+        if files and API_KEY:
+            for f in files:
+                res = model.generate_content([
+                    {"mime_type": f.type, "data": f.read()},
+                    "Explain report, risks"
+                ])
+                st.write(res.text)
+
+        st.markdown('</div>', unsafe_allow_html=True)
 
 conn.close()
