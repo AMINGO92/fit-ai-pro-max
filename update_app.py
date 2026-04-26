@@ -207,7 +207,7 @@ elif st.session_state.step == 4:
 
         st.markdown('</div>', unsafe_allow_html=True)
 
-        if not log.empty:
+if not log.empty:
 
     avg_steps = int(log["steps"].mean())
     avg_cal = int(log["calories"].mean())
