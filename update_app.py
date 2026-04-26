@@ -173,8 +173,7 @@ elif st.session_state.step == 4:
     age = st.session_state.age
 
     # ================= TAB 1 =================
-    with tab1:
-
+    with tab1:    
     # ================= BODY =================
     st.markdown('<div class="section">', unsafe_allow_html=True)
 
