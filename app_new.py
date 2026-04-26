@@ -215,7 +215,7 @@ if uploaded_file is not None:
     st.image(uploaded_file)
 
     import google.generativeai as genai
-    genai.configure(api_key="AIzaSyBjmWDbovBjiLlTWFbtrm5o4t_vQAzgdmM")   # 🔥 इथे तुझी key टाक
+    genai.configure("AIzaSyDEcC4FtECxR-yi58z9ewitnGCI7drNzKo")   # 🔥 इथे तुझी key टाक
 
     model = genai.GenerativeModel("models/gemini-2.5-flash")
 
@@ -566,7 +566,7 @@ def health_risk(bmi, sleep, calories, burn):
 
 st.subheader("🧪 Medical AI")
 
-api_key = "AIzaSyBjmWDbovBjiLlTWFbtrm5o4t_vQAzgdmM"
+api_key = "AIzaSyDEcC4FtECxR-yi58z9ewitnGCI7drNzKo"
 
 medical_files = st.file_uploader(
     "Upload Medical Report",
