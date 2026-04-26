@@ -209,11 +209,22 @@ elif st.session_state.step == 4:
 
         if not log.empty:
 
-            avg_steps = int(log["steps"].mean())
-            avg_cal = int(log["calories"].mean())
+    avg_steps = int(log["steps"].mean())
+    avg_cal = int(log["calories"].mean())
 
-            burn = avg_steps * 0.04
-            deficit = burn - avg_cal
+    burn = avg_steps * 0.04
+    deficit = burn - avg_cal
+
+    st.subheader("🔥 Burn vs Intake")
+    st.write("Burn:", burn)
+    st.write("Calories:", avg_cal)
+
+    if deficit < 0:
+        st.error("⚠️ Weight वाढतो आहे (Calorie जास्त आहे)")
+    else:
+        st.success("🔥 Weight कमी होतो आहे (Fat Loss Mode)")
+
+            
 
             st.markdown('<div class="section">', unsafe_allow_html=True)
 
