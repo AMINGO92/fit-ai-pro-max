@@ -108,12 +108,27 @@ if st.session_state.step == 1:
 elif st.session_state.step == 2:
     st.markdown("### 📏 Body Details")
 
-    # ✅ Dynamic default (first time only)
-    age_default = st.session_state.get("age", 25)
-    height_default = st.session_state.get("height", 170)
-    weight_default = st.session_state.get("weight", 70.0)
+    # 👉 FORM START (IMPORTANT)
+    with st.form("body_form"):
 
-    col1, col2, col3 = st.columns(3)
+        age_default = st.session_state.get("age", 25)
+        height_default = st.session_state.get("height", 170)
+        weight_default = st.session_state.get("weight", 70.0)
+
+        col1, col2, col3 = st.columns(3)
+
+        age = col1.number_input("Age", value=age_default)
+        height = col2.number_input("Height", value=height_default)
+        weight = col3.number_input("Weight", value=weight_default)
+
+        # 👉 ONLY this button works
+        submit = st.form_submit_button("Next ➡")
+
+        if submit:
+            st.session_state.age = age
+            st.session_state.height = height
+            st.session_state.weight = weight
+            st.session_state.step = 3
 
     # ✅ Inputs (user change = auto update)
     age = col1.number_input("Age", value=age_default, step=1)
