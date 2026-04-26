@@ -156,7 +156,7 @@ elif st.session_state.step == 4:
 # =====================
 # BODY ENGINE
 # =====================
-	st.subheader("🧠 Body Analysis")
+st.subheader("🧠 Body Analysis")
 
 	weight_now = latest['weight']
 	height = st.session_state.height
