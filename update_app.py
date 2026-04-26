@@ -93,7 +93,14 @@ st.title("🔥 Fit AI Pro MAX")
 # ================= FLOW =================
 if st.session_state.step == 1:
     st.markdown("### 😴 Sleep")
-    sleep = st.number_input("Hours",7.0)
+
+    # ✅ First time default
+    sleep_default = st.session_state.get("sleep", 7.0)
+
+    # ✅ Input with saved value
+    sleep = st.number_input("Hours", value=sleep_default)
+
+    # ✅ Save on Next
     if st.button("Next ➡"):
         st.session_state.sleep = sleep
         st.session_state.step = 2
